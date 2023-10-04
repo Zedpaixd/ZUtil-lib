@@ -11,7 +11,7 @@ using namespace ZUtil;
         void addNodeAfter(char, int);            // inserted after head
         void addNodeBeforeData(char, Node*);     // Same as above, inserted before/after a specific node
         void addNodeAfterData(char, Node*);      // 
-        void out(bool);                          // Prints the list, true starts from beginning, false starts from end
+        void print(bool);                          // Prints the list, true starts from beginning, false starts from end
         void setData(char);
         void setPrev(Node*);
         void setNext(Node*);
@@ -22,7 +22,7 @@ using namespace ZUtil;
 
 int main(int argc, char* argv[]){
     
-    char s[] = "abcdefgh";
+    char s[] = "abcdecfgchc";
 
     Clist *list;
     Node *curr;
@@ -31,9 +31,12 @@ int main(int argc, char* argv[]){
     for(size_t i=1; i < strlen(s); i++) // create the rest of the linked list
         list->addNodeBefore(s[i]);
 
-    list->out(false);
-    // list->out(false);
-    cout<< list->size;
+    list->print(true);
+    // list->findData('c', true);
+    // cout<< list->size;
+    // list->deleteData('c');
+    list->print(true);
+
 
     return 0;
 }

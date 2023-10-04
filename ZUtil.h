@@ -22,35 +22,33 @@ struct  Node {
 
 class Clist
 {
-    public:
+    public:                                       // TODO: Make generic
         Clist(char);
         virtual ~Clist();
-        Node *head;     // current node that is being pointed to
-        int size;
-        bool isEmpty();
-        void addNodeBefore(char, int);           // inserted before head
-        void addNodeAfter(char, int);            // inserted after head
-        void addNodeBeforeData(char, Node*);// Same as above, inserted before/after a specific node
-        void addNodeAfterData(char, Node*);
-        void out(bool);     // Prints the list, true starts from beginning, false starts from end
-        void setData(char);
-        void setPrev(Node*);
-        void setNext(Node*);
-        bool findData(char);    // Searches through the list to find the char
-        void deleteData(char, bool);
-
+        Node *head;                               // current node that is being pointed to
+        int size;                                 // number of elements in the circular linked list
+        bool isEmpty();                           // size > 0
+        void addNodeBefore(char, bool);           // inserted before head
+        void addNodeAfter(char, bool);            // inserted after head
+        void addNodeBeforeData(char, Node*);      // (TODO) same as above, inserted before a specific node
+        void addNodeAfterData(char, Node*);       // (TODO) same as above, inserted after a specific node
+        void print(bool);                         // prints the list, true starts from beginning, false starts from end
+        void setData(char);                       // sets data
+        void setPrev(Node*);                      // sets previous
+        void setNext(Node*);                      // sets next
+        bool findData(char, bool);                // checks if the data exists
+        void deleteData(char, bool, bool);        // deletes data       DEFAULT: ALL occurrences
 };
 
-Clist::Clist(char d)
+Clist::Clist(char data)
 {
-    head = new Node(d, NULL, NULL);
+    head = new Node(data, NULL, NULL);
     head->next = head->prev = head;
     size = 1;
-
 }
+
 Clist::~Clist()
 {
-
     Node *tmp = this->head;
     Node *temp;
     while(tmp->prev)
@@ -63,30 +61,32 @@ Clist::~Clist()
         tmp = temp;
     }
     tmp = temp = NULL;
-
 }
-bool Clist::isEmpty()
-{   return (this->size == 0);}
 
-void Clist::addNodeBefore(char d, int debug = 0)
+bool Clist::isEmpty()
+{
+    return (this->size == 0);
+}
+
+void Clist::addNodeBefore(char data, bool debug = false)
 {
     Node *n = head;
     Node *p = head->prev;
 
-    Node *temp = new Node (d, p, n);
+    Node *temp = new Node (data, p, n);
     size++;
 
     if(debug)
     cout << "added: " << temp->data << "  before: "
-          << temp->prev->data << "  after: " << temp->next->data << endl;
-
+         << temp->prev->data << "  after: " << temp->next->data << endl;
 }
-void Clist::addNodeAfter(char d, int debug = 0)
+
+void Clist::addNodeAfter(char data, bool debug = false)
 {
     Node *n = head->next;
     Node *p = head;
 
-    Node *temp = new Node (d, p, n);
+    Node *temp = new Node (data, p, n);
     size++;
     
     if (debug)
@@ -94,7 +94,8 @@ void Clist::addNodeAfter(char d, int debug = 0)
          << temp->prev->data << "  after: " << temp->next->data << endl;
 
 }
-void Clist::out(bool dir)   // True to traverse next, false to traverse prev
+
+void Clist::print(bool dir)   // True to traverse next, false to traverse prev
 {
     Node *tmp = head;
 
@@ -105,19 +106,23 @@ void Clist::out(bool dir)   // True to traverse next, false to traverse prev
     
     cout << endl;
 }
+
 void Clist::setData(char Data)
 {
     this->head->data = Data;
 }
+
 void Clist::setPrev(Node* Prev)
 {
     this->head->prev = Prev;
 }
+
 void Clist::setNext(Node* Next)
 {
     this->head->next = Next;
 }
-bool Clist::findData(char search)
+
+bool Clist::findData(char search, bool DEBUG_print_count = false)
 {
     int counter = 0;
     Node *tmp = head;
@@ -128,31 +133,34 @@ bool Clist::findData(char search)
         tmp = tmp->next;
     }
 
-    if (counter > 0)
-    {
-        cout << "'" << search << "' was found " << counter << " time(s)" << endl;
-        return true;
-    }else
-    {
-        cout << "'" << search << "' was not found" << endl;
-        return false;
-    }
+    if(DEBUG_print_count) cout << "'" << search << "' was found " << counter << " time(s)" << endl;
+    
+    return counter > 0;
 }
 
-void Clist::deleteData(char search, bool all)   // If true, it will delete all nodes with the same search
-{                                               // If false, it will delete the first Node only
+void Clist::deleteData(char search, bool all_occurrences = true, bool DEBUG = false)     // If true, it will delete all nodes with the same search
+{                                                                                        // If false, it will delete the first Node only
     Node *tmp = head;
+    int ctr = 0;
+
     while(tmp)
     {
         if(tmp->data == search)
         {
-            cout << "Deleting " << search << endl;
+            if (DEBUG) cout << "Deleting " << tmp->data << endl;
+
             tmp->prev->next = tmp->next;
             tmp->next->prev = tmp->prev;
-            if (false)
+            
+            if (!all_occurrences)
                 return;
         }
+
         tmp = tmp->next;
+        ctr++;
+
+        if (ctr > size)
+           return;
 
     }
 }
