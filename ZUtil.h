@@ -29,10 +29,10 @@ class Clist
         Node<T> *head;                                                              // current node that is being pointed to
         int size;                                                                   // number of elements in the circular linked list
         bool isEmpty();                                                             // size > 0
-        void addNodeBefore(T, bool debug = false);                                  // inserted before head
-        void addNodeAfter(T, bool debug = false);                                   // inserted after head
-        void addNodeBeforeData(T, Node<T>*);                                        // (TODO) same as above, inserted before a specific node
-        void addNodeAfterData(T, Node<T>*);                                         // (TODO) same as above, inserted after a specific node
+        void addNodeEnd(T, bool debug = false);                                     // inserted node before head / at end
+        void addNodeAfterHead(T, bool debug = false);                               // inserted after head
+        void addNodeBeforeData(T, Node<T>*);                                        // (BROKEN) same as above, inserted before a specific node
+        void addNodeAfterData(T, Node<T>*);                                         // same as above, inserted after a specific node
         void print(bool);                                                           // prints the list, true starts from beginning, false starts from end
         void setData(T);                                                            // sets data
         void setPrev(Node<T>*);                                                     // sets previous
@@ -73,7 +73,7 @@ bool Clist<T>::isEmpty()
 }
 
 template<typename T>
-void Clist<T>::addNodeBefore(T data, bool debug)
+void Clist<T>::addNodeEnd(T data, bool debug)
 {
     Node<T> *n = head;
     Node<T> *p = head->prev;
@@ -87,7 +87,7 @@ void Clist<T>::addNodeBefore(T data, bool debug)
 }
 
 template<typename T>
-void Clist<T>::addNodeAfter(T data, bool debug)
+void Clist<T>::addNodeAfterHead(T data, bool debug)
 {
     Node<T> *n = head->next;
     Node<T> *p = head;
@@ -101,16 +101,60 @@ void Clist<T>::addNodeAfter(T data, bool debug)
 
 }
 
+template<typename T>   // Broken
+void Clist<T>::addNodeBeforeData(T data, Node<T>* node) {
+
+    if(!node) {
+        std::cerr << "Provided node is null!" << std::endl;
+        return;
+    }
+
+    Node<T>* newNode = new Node<T>(data, node->prev, node);
+
+
+    if(node->prev) {
+        node->prev->next = newNode;
+    }
+    else {
+        head = newNode;
+    }
+
+    node->prev = newNode;
+    
+    size++; 
+}
+
+
+template<typename T>
+void Clist<T>::addNodeAfterData(T data, Node<T>* node) {
+
+    if(!node) {
+        std::cerr << "Provided node is null!" << std::endl;
+        return;
+    }
+
+    Node<T>* newNode = new Node<T>(data, node, node->next);
+
+    if(node->next) {
+        node->next->prev = newNode;
+    }
+    
+    node->next = newNode;
+    
+    size++;
+}
+
 template<typename T>
 void Clist<T>::print(bool dir)   // True to traverse next, false to traverse prev
 {
-    Node<T> *tmp = head;
 
-    do{
-        std::cout << tmp->data << " "; 
-        tmp = dir ? tmp->next : tmp->prev;
-    }while(tmp != head);
-    
+    if(!head) return;  // If the list is empty
+
+    Node<T>* current = head;
+    do {
+        std::cout << current->data << " ";
+        current = current->next;
+    } while(current && current != head);  // Break loop if back to head
     std::cout << std::endl;
 }
 

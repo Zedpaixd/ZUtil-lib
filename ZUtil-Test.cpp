@@ -7,8 +7,8 @@ using namespace ZUtil;
 /*
         int size;
         bool isEmpty();
-        void addNodeBefore(char, int);           // inserted before head
-        void addNodeAfter(char, int);            // inserted after head
+        void addNodeEnd(char, int);           // inserted before head
+        void addNodeAfterHead(char, int);            // inserted after head
         void addNodeBeforeData(char, Node*);     // Same as above, inserted before/after a specific node
         void addNodeAfterData(char, Node*);      // 
         void print(bool);                          // Prints the list, true starts from beginning, false starts from end
@@ -29,12 +29,15 @@ int main(int argc, char* argv[]){
     list = new Clist<char>(s[0]);
 
     for(size_t i=1; i < strlen(s); i++) // create the rest of the linked list
-        list->addNodeBefore(s[i]);
+        list->addNodeEnd(s[i]);
 
+    // list->print(true);
+    // list->findData('c', true);
+    // cout<< list->size << endl;
+    // list->deleteData('a');
     list->print(true);
-    list->findData('c', true);
-    cout<< list->size << endl;
-    list->deleteData('a');
+
+    list->addNodeEnd('z',list->head->next);
     list->print(true);
 
     // Clist<int> *listB;
@@ -42,7 +45,7 @@ int main(int argc, char* argv[]){
     // listB = new Clist<int>(0);
 
     // for(size_t i=1; i < 25; i++) // create the rest of the linked list
-    //     listB->addNodeBefore(i%5);
+    //     listB->addNodeEnd(i%5);
 
     // listB->print(true);
     // listB->findData(1, true);
