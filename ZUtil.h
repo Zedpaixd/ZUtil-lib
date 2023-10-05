@@ -4,14 +4,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
-using namespace std;
+#include <iostream>
 
 
 namespace ZUtil{
 
+template<typename T>
 struct  Node {
-    char data;
+    T data;
     Node *prev, *next;
     Node (char d, Node *p, Node *n): data(d), prev(p), next(n)
     {
@@ -20,37 +20,40 @@ struct  Node {
     }
 };
 
+template<typename T>
 class Clist
 {
-    public:                                       // TODO: Make generic
-        Clist(char);
+    public:
+        Clist(T);
         virtual ~Clist();
-        Node *head;                               // current node that is being pointed to
-        int size;                                 // number of elements in the circular linked list
-        bool isEmpty();                           // size > 0
-        void addNodeBefore(char, bool);           // inserted before head
-        void addNodeAfter(char, bool);            // inserted after head
-        void addNodeBeforeData(char, Node*);      // (TODO) same as above, inserted before a specific node
-        void addNodeAfterData(char, Node*);       // (TODO) same as above, inserted after a specific node
-        void print(bool);                         // prints the list, true starts from beginning, false starts from end
-        void setData(char);                       // sets data
-        void setPrev(Node*);                      // sets previous
-        void setNext(Node*);                      // sets next
-        bool findData(char, bool);                // checks if the data exists
-        void deleteData(char, bool, bool);        // deletes data       DEFAULT: ALL occurrences
+        Node<T> *head;                                                              // current node that is being pointed to
+        int size;                                                                   // number of elements in the circular linked list
+        bool isEmpty();                                                             // size > 0
+        void addNodeBefore(T, bool debug = false);                                  // inserted before head
+        void addNodeAfter(T, bool debug = false);                                   // inserted after head
+        void addNodeBeforeData(T, Node<T>*);                                        // (TODO) same as above, inserted before a specific node
+        void addNodeAfterData(T, Node<T>*);                                         // (TODO) same as above, inserted after a specific node
+        void print(bool);                                                           // prints the list, true starts from beginning, false starts from end
+        void setData(T);                                                            // sets data
+        void setPrev(Node<T>*);                                                     // sets previous
+        void setNext(Node<T>*);                                                     // sets next
+        bool findData(T, bool DEBUG_print_count = false);                           // checks if the data exists
+        void deleteData(T, bool all_occurrences = true, bool DEBUG = false);        // deletes data       DEFAULT: ALL occurrences
 };
 
-Clist::Clist(char data)
+template<typename T>
+Clist<T>::Clist(T data)
 {
-    head = new Node(data, NULL, NULL);
+    head = new Node<T>(data, NULL, NULL);
     head->next = head->prev = head;
     size = 1;
 }
 
-Clist::~Clist()
+template<typename T>
+Clist<T>::~Clist()
 {
-    Node *tmp = this->head;
-    Node *temp;
+    Node<T> *tmp = this->head;
+    Node<T> *temp;
     while(tmp->prev)
         tmp = tmp->prev;
     while(tmp)
@@ -63,69 +66,77 @@ Clist::~Clist()
     tmp = temp = NULL;
 }
 
-bool Clist::isEmpty()
+template<typename T>
+bool Clist<T>::isEmpty()
 {
     return (this->size == 0);
 }
 
-void Clist::addNodeBefore(char data, bool debug = false)
+template<typename T>
+void Clist<T>::addNodeBefore(T data, bool debug)
 {
-    Node *n = head;
-    Node *p = head->prev;
+    Node<T> *n = head;
+    Node<T> *p = head->prev;
 
-    Node *temp = new Node (data, p, n);
+    Node<T> *temp = new Node<T>(data, p, n);
     size++;
 
     if(debug)
-    cout << "added: " << temp->data << "  before: "
-         << temp->prev->data << "  after: " << temp->next->data << endl;
+    std::cout << "added: " << temp->data << "  before: "
+         << temp->prev->data << "  after: " << temp->next->data << std::endl;
 }
 
-void Clist::addNodeAfter(char data, bool debug = false)
+template<typename T>
+void Clist<T>::addNodeAfter(T data, bool debug)
 {
-    Node *n = head->next;
-    Node *p = head;
+    Node<T> *n = head->next;
+    Node<T> *p = head;
 
-    Node *temp = new Node (data, p, n);
+    Node<T> *temp = new Node<T>(data, p, n);
     size++;
     
     if (debug)
-    cout << "added: " << temp->data << "  before: "
-         << temp->prev->data << "  after: " << temp->next->data << endl;
+    std::cout << "added: " << temp->data << "  before: "
+         << temp->prev->data << "  after: " << temp->next->data << std::endl;
 
 }
 
-void Clist::print(bool dir)   // True to traverse next, false to traverse prev
+template<typename T>
+void Clist<T>::print(bool dir)   // True to traverse next, false to traverse prev
 {
-    Node *tmp = head;
+    Node<T> *tmp = head;
 
     do{
-        cout << tmp->data << " "; 
+        std::cout << tmp->data << " "; 
         tmp = dir ? tmp->next : tmp->prev;
     }while(tmp != head);
     
-    cout << endl;
+    std::cout << std::endl;
 }
 
-void Clist::setData(char Data)
+template<typename T>
+void Clist<T>::setData(T Data)
 {
     this->head->data = Data;
 }
 
-void Clist::setPrev(Node* Prev)
+template<typename T>
+void Clist<T>::setPrev(Node<T>* Prev)
 {
     this->head->prev = Prev;
 }
 
-void Clist::setNext(Node* Next)
+template<typename T>
+void Clist<T>::setNext(Node<T>* Next)
 {
     this->head->next = Next;
 }
 
-bool Clist::findData(char search, bool DEBUG_print_count = false)
+template<typename T>
+bool Clist<T>::findData(T search, bool DEBUG_print_count)
 {
     int counter = 0;
-    Node *tmp = head;
+    Node<T> *tmp = head;
     while(tmp->next != head)
     {
         if(tmp->data == search)
@@ -133,35 +144,58 @@ bool Clist::findData(char search, bool DEBUG_print_count = false)
         tmp = tmp->next;
     }
 
-    if(DEBUG_print_count) cout << "'" << search << "' was found " << counter << " time(s)" << endl;
+    if(DEBUG_print_count) std::cout << "'" << search << "' was found " << counter << " time(s)" << std::endl;
     
     return counter > 0;
 }
 
-void Clist::deleteData(char search, bool all_occurrences = true, bool DEBUG = false)     // If true, it will delete all nodes with the same search
-{                                                                                        // If false, it will delete the first Node only
-    Node *tmp = head;
+template<typename T>
+void Clist<T>::deleteData(T search, bool all_occurrences, bool DEBUG)
+{                                                                                       
+    Node<T> *tmp = head;
     int ctr = 0;
 
-    while(tmp)
+    while(tmp && ctr < size)
     {
         if(tmp->data == search)
         {
-            if (DEBUG) cout << "Deleting " << tmp->data << endl;
+            if (DEBUG) std::cout << "Deleting " << tmp->data << std::endl;
 
-            tmp->prev->next = tmp->next;
-            tmp->next->prev = tmp->prev;
+            // Handle deleting the head node
+            if(tmp == head)
+            {
+                // If there is more than one node, update head and fix links
+                if(head->next != head)
+                {
+                    head = head->next;
+                    head->prev = tmp->prev;
+                    tmp->prev->next = head;
+                }
+                else // Only one node, so list becomes empty
+                {
+                    head = nullptr;
+                }
+            }
+            else // Deleting non-head node
+            {
+                tmp->prev->next = tmp->next;
+                tmp->next->prev = tmp->prev;
+            }
             
+            Node<T>* toDelete = tmp;
+            tmp = tmp->next; // Move to the next node before deleting current
+            delete toDelete; // Free the memory
+            size--; // Decrease the size of the list
+
             if (!all_occurrences)
                 return;
         }
+        else
+        {
+            tmp = tmp->next; // If not deleting, move to the next node
+        }
 
-        tmp = tmp->next;
         ctr++;
-
-        if (ctr > size)
-           return;
-
     }
 }
 }
