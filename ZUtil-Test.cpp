@@ -53,6 +53,14 @@ int main(int argc, char* argv[]){
     // listB->deleteData(1);
     // listB->print(true);
 
+    BinarySearchTree<int> *bst;
+    bst = new BinarySearchTree<int>();
+    bst->insert(1);
+    bst->insert(9);
+    bst->insert(5);
+    bst->insert(2);
+    bst->insert(7);
+    cout<<bst->findMax();
 
     return 0;
 }
